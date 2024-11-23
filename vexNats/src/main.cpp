@@ -1,6 +1,19 @@
 #include "main.h"
 #include "pros/misc.h"
 
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+pros::MotorGroup left_mg({-4, 3, -11}); // Creates a motor group with forwards
+pros::MotorGroup right_mg({8, -9, 20}); // Creates a motor group with forwards
+// intake: 12
+pros::Motor intake(-12, pros::v5::MotorGears::green,
+                   pros::v5::MotorUnits::rotations);
+// arm: 13
+pros::Motor arm(-13, pros::v5::MotorGears::red,
+                pros::v5::MotorUnits::rotations);
+// mogomech: port g
+pros::adi::Pneumatics mogoMech('g', false, true);
+// flap: port h
+pros::adi::Pneumatics flap('h', false);
 /**
  * A callback function for LLEMU's center button.
  *
@@ -16,7 +29,7 @@ void on_center_button() {
     pros::lcd::clear_line(2);
   }
 }
-
+//
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -75,29 +88,14 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  pros::Controller master(pros::E_CONTROLLER_MASTER);
-  pros::MotorGroup left_mg({-4, 3, -11}); // Creates a motor group with forwards
-                                          // ports 1 & 3 and reversed port 2
-  pros::MotorGroup right_mg({8, -9, 20}); // Creates a motor group with forwards
-                                          // port 5 and reversed ports 4 & 6
 
-  // intake: 12
-  pros::Motor intake(-12, pros::v5::MotorGears::green,
-                     pros::v5::MotorUnits::rotations);
-  // arm: 13
-  pros::Motor arm(-13, pros::v5::MotorGears::red,
-                  pros::v5::MotorUnits::rotations);
   arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  // mogomech: port g
-  pros::adi::Pneumatics mogoMech('g', false);
-  // flap: port h
-  pros::adi::Pneumatics flap('h', false, true);
   bool intakeToggle = false;
   bool canFlap = true;
   bool canMogo = true;
+  bool canIntake = true;
   while (true) {
     // Arcade control scheme
-    bool canIntake = true;
     int dir = master.get_analog(
         ANALOG_LEFT_Y); // Gets amount forward/backward from left joystick
     int turn = master.get_analog(
@@ -115,11 +113,13 @@ void opcontrol() {
     } else {
       if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && canIntake) {
         canIntake = false;
-        if (intakeToggle) {
-          intakeToggle = false;
-        } else {
+        if (!intakeToggle) {
           intakeToggle = true;
+        } else if (intakeToggle) {
+          intakeToggle = false;
         }
+      } else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+        canIntake = true;
       }
       if (intakeToggle) { // intake toggle basic logic
         intake.move(100);
