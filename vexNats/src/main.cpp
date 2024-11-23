@@ -65,6 +65,7 @@ void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
   movefb(1, 100, 1000);
+  movelr(1, 100, 1000);
 }
 /**
  * Runs the operator control code. This function will be started in its own task

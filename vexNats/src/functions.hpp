@@ -25,6 +25,6 @@ void movefb(float amnt, int spd, int wait) {
 }
 void movelr(float amnt, int spd, int wait) {
   left_mg.move_relative(amnt, spd);
-  right_mg.move_relative(amnt, -spd);
+  right_mg.move_relative(-amnt, spd);
   pros::delay(wait);
 }
