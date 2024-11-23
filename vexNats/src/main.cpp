@@ -1,4 +1,5 @@
 #include "main.h"
+#include "functions.h"
 #include "pros/misc.h"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
