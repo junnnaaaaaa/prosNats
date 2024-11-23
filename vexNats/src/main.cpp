@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -87,34 +88,67 @@ void opcontrol() {
   pros::Motor arm(-13, pros::v5::MotorGears::red,
                   pros::v5::MotorUnits::rotations);
   arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  // mogomech: port g
+  pros::adi::Pneumatics mogoMech('g', false);
+  // flap: port h
+  pros::adi::Pneumatics flap('h', false, true);
+  bool intakeToggle = false;
+  bool canFlap = true;
+  bool canMogo = true;
   while (true) {
-    pros::lcd::print(0, "%d %d %d",
-                     (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-                     (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-                     (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >>
-                         0); // Prints status of the emulated screen LCDs
-
     // Arcade control scheme
+    bool canIntake = true;
     int dir = master.get_analog(
         ANALOG_LEFT_Y); // Gets amount forward/backward from left joystick
     int turn = master.get_analog(
         ANALOG_RIGHT_X);       // Gets the turn left/right from right joystick
     left_mg.move(dir + turn);  // Sets left motor voltage
     right_mg.move(dir - turn); // Sets right motor voltage
-    pros::delay(20);           // Run for 20 ms then update
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      intake.move(100);
-    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+    if (master.get_digital(
+            pros::E_CONTROLLER_DIGITAL_R2)) { // intake stuff with toggle
+      intakeToggle = false;
       intake.move(-100);
+    } else if (master.get_digital(
+                   pros::E_CONTROLLER_DIGITAL_R1)) { // intake stuff with toggle
+      intakeToggle = false;
+      intake.move(100);
     } else {
-      intake.move(0);
+      if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && canIntake) {
+        canIntake = false;
+        if (intakeToggle) {
+          intakeToggle = false;
+        } else {
+          intakeToggle = true;
+        }
+      }
+      if (intakeToggle) { // intake toggle basic logic
+        intake.move(100);
+      } else {
+        intake.move(0);
+      }
     }
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+    if (master.get_digital(
+            pros::E_CONTROLLER_DIGITAL_L1)) { // arm logic and stuff
       arm.move(100);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
       arm.move(-100);
     } else {
       arm.move(0);
     }
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) &&
+        canMogo) { // mogoMech toggle
+      mogoMech.toggle();
+      canMogo = false;
+    } else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+      canMogo = true;
+    }
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) &&
+        canFlap) { // mogoMech toggle
+      flap.toggle();
+      canFlap = false;
+    } else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+      canFlap = true;
+    }
+    pros::delay(20); // Run for 20 ms then update
   }
 }
