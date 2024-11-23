@@ -1,20 +1,8 @@
 #include "main.h"
-#include "functions.h"
+#include "functions.hpp"
 #include "pros/misc.h"
+#pragma
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup left_mg({-4, 3, -11}); // Creates a motor group with forwards
-pros::MotorGroup right_mg({8, -9, 20}); // Creates a motor group with forwards
-// intake: 12
-pros::Motor intake(-12, pros::v5::MotorGears::green,
-                   pros::v5::MotorUnits::rotations);
-// arm: 13
-pros::Motor arm(-13, pros::v5::MotorGears::red,
-                pros::v5::MotorUnits::rotations);
-// mogomech: port g
-pros::adi::Pneumatics mogoMech('g', false, true);
-// flap: port h
-pros::adi::Pneumatics flap('h', false);
 /**
  * A callback function for LLEMU's center button.
  *
@@ -73,15 +61,15 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
-
+void autonomous() { movefb(1, 100); }
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
  * control mode.
  *
- * If no competition control is connected, this function will run immediately
+ * If no competition control is connec:w
+ * ted, this function will run immediately
  * following initialize().
  *
  * If the robot is disabled or communications is lost, the
