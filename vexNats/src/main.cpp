@@ -28,8 +28,7 @@ void on_center_button() {
 void initialize() {
   pros::lcd::initialize();
   pros::lcd::set_text(1, "Hello noah! I am watching you ");
-
-  pros::lcd::register_btn1_cb(on_center_button);
+  imu.reset(true);
 }
 
 /**
@@ -64,8 +63,9 @@ void competition_initialize() {}
 void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
-  movefb(1, 100, 1000);
-  movelr(1, 100, 1000);
+  // movefb(1, 100, 1000);
+  // movelr(1, 100, 1000);
+  pid(90);
 }
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -82,7 +82,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
+  std::string headingstr = "killing myself";
   arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   bool intakeToggle = false;
   bool canFlap = true;
@@ -143,6 +143,8 @@ void opcontrol() {
     } else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
       canFlap = true;
     }
+    headingstr = std::to_string(imu.get_heading());
+    pros::lcd::set_text(2, headingstr);
     pros::delay(20); // Run for 20 ms then update
   }
 }
