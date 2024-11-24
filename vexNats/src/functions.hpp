@@ -35,11 +35,14 @@ void pid(float targ) {
   float preverror;
   float deriv;
   float head;
-  float kp = 0.5556;
-  float ki = 0.2;
+  float kp = 0.05;
+  float ki = 0.3;
+  float kd = 1;
   float power;
   float dt = 20;
+  std::string headstr = "kill me please";
   while (true) {
+    headstr = std::to_string(imu.get_heading());
     head = imu.get_heading();
     error = targ - head;
     if (error > 180) {
@@ -51,10 +54,15 @@ void pid(float targ) {
     if (error > -2 && error < 2) {
       inter = error;
     }
-    inter += error * dt;
-    power = error * kp + inter * ki;
+    if (inter > 175 | inter < -175) {
+      inter = 2;
+    }
+    inter += error;
+    deriv = error - preverror;
+    power = error * kp + inter * ki + deriv * kd;
     left_mg.move(power);
     right_mg.move(-power);
+    pros::lcd::set_text(2, headstr);
     pros::delay(dt);
   }
 }
