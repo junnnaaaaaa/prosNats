@@ -31,11 +31,14 @@ void movelr(float amnt, int spd, int wait) {
 }
 void pid(float targ) {
   float error;
-  float inter;
+  float inter = 0;
   float preverror;
   float deriv;
   float head;
   float kp = 0.5556;
+  float ki = 0.2;
+  float power;
+  float dt = 20;
   while (true) {
     head = imu.get_heading();
     error = targ - head;
@@ -45,7 +48,13 @@ void pid(float targ) {
     if (error < -180) {
       error = error + 360;
     }
-    left_mg.move(error * kp);
-    right_mg.move((error * kp) * -1);
+    if (error > -2 && error < 2) {
+      inter = error;
+    }
+    inter += error * dt;
+    power = error * kp + inter * ki;
+    left_mg.move(power);
+    right_mg.move(-power);
+    pros::delay(dt);
   }
 }

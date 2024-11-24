@@ -63,8 +63,7 @@ void competition_initialize() {}
 void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
-  // movefb(1, 100, 1000);
-  // movelr(1, 100, 1000);
+  movefb(1, 100, 1000);
   pid(90);
 }
 /**
