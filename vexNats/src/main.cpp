@@ -63,8 +63,16 @@ void competition_initialize() {}
 void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
-  movefb(3, 300, 1000);
+  // movefb(3, 300, 1000);
   pid(90);
+  pros::delay(200);
+  pros::lcd::set_text(6, std::to_string(imu.get_heading()));
+  pid(270);
+  pros::delay(200);
+  pros::lcd::set_text(6, std::to_string(imu.get_heading()));
+  pid(180);
+  pros::delay(200);
+  pros::lcd::set_text(6, std::to_string(imu.get_heading()));
 }
 /**
  * Runs the operator control code. This function will be started in its own task
