@@ -18,7 +18,10 @@ pros::Motor arm(-13, pros::v5::MotorGears::red,
 pros::adi::Pneumatics mogoMech('g', false, true);
 // flap: port h
 pros::adi::Pneumatics flap('h', false);
+// inertia moment: port 20
 pros::IMU imu(20);
+// me when i rotate: port 18
+pros::Rotation armRotation(18);
 void movefb(float amnt, int spd, int wait) {
   left_mg.move_relative(amnt, spd);
   right_mg.move_relative(amnt, spd);
