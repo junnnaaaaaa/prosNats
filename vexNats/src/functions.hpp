@@ -21,7 +21,7 @@ pros::adi::Pneumatics flap('h', false);
 // inertia moment: port 20
 pros::IMU imu(20);
 // me when i rotate: port 18
-pros::Rotation armRotation(18);
+pros::Rotation odoRotation(18);
 void movefb(float amnt, int spd, int wait) {
   left_mg.move_relative(amnt, spd);
   right_mg.move_relative(amnt, spd);
@@ -35,7 +35,7 @@ void movelr(float amnt, int spd, int wait) {
 void pidTurn(float targ) {
   float error;
   float inter = 0;
-  float preverror;
+  float preverror = 0;
   float deriv;
   float head;
   float kp = 0.02;
@@ -55,6 +55,7 @@ void pidTurn(float targ) {
       error = error - 360;
     }
     if (error < -180) {
+    https: // www.vexrobotics.com/276-7417.html
       error = error + 360;
     }
     if (error > -2 && error < 2) {
@@ -74,7 +75,6 @@ void pidTurn(float targ) {
     if (2 > error && error > -2) {
       count += 1;
       if (count > 2) {
-
         pros::lcd::set_text(4, "broken");
         break;
       }
@@ -84,4 +84,28 @@ void pidTurn(float targ) {
 
   pros::lcd::set_text(5, "turn complete");
 }
-void pidMove(float targ) { float error, preverror, deriv, head, inter; }
+void pidMove(float targ) {
+  float error, deriv, amt, inter;
+  float preverror = 0;
+  float kp = 0.01;
+  float ki = 1;
+  float kd = 1;
+  float power = 100;
+  float dt = 20;
+  int count = 0;
+  targ = (targ / 220.0) * 360.0;
+  while (true) {
+    amt = odoRotation.get_angle();
+    amt = amt / 100.0;
+    error = targ - amt;
+    if (std::abs(inter) > 200) {
+      inter = 0;
+    }
+    inter += error;
+    deriv = error - preverror;
+    power = error * kp + inter * ki + deriv * kd;
+    left_mg.move(power);
+    right_mg.move(power);
+    pros::delay(dt);
+  }
+}
