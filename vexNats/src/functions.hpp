@@ -32,7 +32,7 @@ void movelr(float amnt, int spd, int wait) {
   right_mg.move_relative(-amnt, spd);
   pros::delay(wait);
 }
-void pid(float targ) {
+void pidTurn(float targ) {
   float error;
   float inter = 0;
   float preverror;
@@ -71,7 +71,7 @@ void pid(float targ) {
     pros::lcd::set_text(2, headstr);
     derivstr = std::to_string(deriv);
     pros::lcd::set_text(3, derivstr);
-    if (2 > deriv && deriv > -2) {
+    if (2 > error && error > -2) {
       count += 1;
       if (count > 2) {
 
@@ -84,3 +84,4 @@ void pid(float targ) {
 
   pros::lcd::set_text(5, "turn complete");
 }
+void pidMove(float targ) { float error, preverror, deriv, head, inter; }

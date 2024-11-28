@@ -64,13 +64,13 @@ void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
   // movefb(3, 300, 1000);
-  pid(90);
+  pidTurn(90);
   pros::delay(200);
   pros::lcd::set_text(6, std::to_string(imu.get_heading()));
-  pid(270);
+  pidTurn(270);
   pros::delay(200);
   pros::lcd::set_text(6, std::to_string(imu.get_heading()));
-  pid(180);
+  pidTurn(180);
   pros::delay(200);
   pros::lcd::set_text(6, std::to_string(imu.get_heading()));
 }
