@@ -95,6 +95,7 @@ void opcontrol() {
   bool canFlap = true;
   bool canMogo = true;
   bool canIntake = true;
+  std::string odostr = "i hate this";
   while (true) {
     // Arcade control scheme
     int dir = master.get_analog(
@@ -150,7 +151,11 @@ void opcontrol() {
     } else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
       canFlap = true;
     }
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+      odoRotation.reset_position();
+    }
     headingstr = std::to_string(imu.get_heading());
+    odostr = std::to_string(odoRotation.get_position());
     pros::lcd::set_text(2, headingstr);
     pros::delay(20); // Run for 20 ms then update
   }

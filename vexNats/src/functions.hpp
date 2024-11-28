@@ -21,7 +21,7 @@ pros::adi::Pneumatics flap('h', false);
 // inertia moment: port 20
 pros::IMU imu(20);
 // me when i rotate: port 18
-pros::Rotation odoRotation(18);
+pros::Rotation odoRotation(-14);
 void movefb(float amnt, int spd, int wait) {
   left_mg.move_relative(amnt, spd);
   right_mg.move_relative(amnt, spd);
@@ -87,16 +87,19 @@ void pidTurn(float targ) {
 void pidMove(float targ) {
   float error, deriv, amt, inter;
   float preverror = 0;
-  float kp = 0.01;
-  float ki = 1;
-  float kd = 1;
+  float kp = 1;
+  float ki = 0;
+  float kd = 0;
   float power = 100;
   float dt = 20;
   int count = 0;
+  odoRotation.reset();
+  std::string amtstr = "killing myself";
   targ = (targ / 220.0) * 360.0;
   while (true) {
-    amt = odoRotation.get_angle();
+    amt = odoRotation.get_position();
     amt = amt / 100.0;
+    amtstr = std::to_string(amt);
     error = targ - amt;
     if (std::abs(inter) > 200) {
       inter = 0;
@@ -106,6 +109,7 @@ void pidMove(float targ) {
     power = error * kp + inter * ki + deriv * kd;
     left_mg.move(power);
     right_mg.move(power);
+    pros::lcd::set_text(2, amtstr);
     pros::delay(dt);
   }
 }
