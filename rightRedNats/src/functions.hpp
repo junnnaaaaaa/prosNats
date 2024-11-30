@@ -42,7 +42,7 @@ void pidTurn(float targ) {
   float head;
   float kp = 0.02;
   float ki = 0.1;
-  float kd = 1;
+  float kd = 1.5;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -74,7 +74,7 @@ void pidTurn(float targ) {
     pros::lcd::set_text(2, headstr);
     derivstr = std::to_string(deriv);
     pros::lcd::set_text(3, derivstr);
-    if (1 > error && error > -1) {
+    if (2 > error && error > -2) {
       count += 1;
       if (count > 2) {
         pros::lcd::set_text(4, "broken");

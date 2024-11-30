@@ -70,9 +70,13 @@ void autonomous() {
   movefb(-0.7, 50, 1000);
   mogoMech.toggle();
   pros::delay(200);
-  movefb(6.5, 400, 1800);
+  movefb(5.8, 400, 1800);
   mogoMech.toggle();
+  movefb(0.1, 400, 300);
   pidTurn(90);
+  movefb(-2.4, 200, 800);
+  pidTurn(0);
+  movefb(-1, 400, 800);
 }
 /**
  * Runs the operator control code. This function will be started in its own task
