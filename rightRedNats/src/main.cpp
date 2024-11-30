@@ -63,15 +63,8 @@ void competition_initialize() {}
 void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
-  pidTurn(90);
-  /*pros::delay(200);
-  pros::lcd::set_text(6, std::to_string(imu.get_heading()));
-  pidTurn(270);
   pros::delay(200);
-  pros::lcd::set_text(6, std::to_string(imu.get_heading()));
-  pidTurn(180);
-  pros::delay(200);
-  pros::lcd::set_text(6, std::to_string(imu.get_heading()));*/
+  movefb(-5, 400, 300);
 }
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -106,11 +99,11 @@ void opcontrol() {
     if (master.get_digital(
             pros::E_CONTROLLER_DIGITAL_R2)) { // intake stuff with toggle
       intakeToggle = false;
-      intake.move(-100);
+      intake.move(-200);
     } else if (master.get_digital(
                    pros::E_CONTROLLER_DIGITAL_R1)) { // intake stuff with toggle
       intakeToggle = false;
-      intake.move(100);
+      intake.move(200);
     } else {
       if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && canIntake) {
         canIntake = false;
@@ -123,7 +116,7 @@ void opcontrol() {
         canIntake = true;
       }
       if (intakeToggle) { // intake toggle basic logic
-        intake.move(100);
+        intake.move(200);
       } else {
         intake.move(0);
       }
@@ -156,6 +149,7 @@ void opcontrol() {
     headingstr = std::to_string(imu.get_heading());
     odostr = std::to_string(odoRotation.get_position());
     pros::lcd::set_text(2, headingstr);
+    pros::lcd::set_text(3, odostr);
     pros::delay(20); // Run for 20 ms then update
   }
 }
