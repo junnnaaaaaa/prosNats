@@ -61,22 +61,28 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+  pros::delay(20);
   mogoMech.retract();
   pros::lcd::set_text(1, "auto initialized");
-  pros::delay(200);
-  movelr(0.45, 400, 300);
-  movefb(-5, 400, 1500);
-  pidTurn(202);
-  movefb(-0.7, 50, 1000);
+  movefb(-4.3, 300, 2000);
+  pidTurn(145);
+  movefb(-1.3, 100, 800);
   mogoMech.toggle();
-  pros::delay(200);
-  movefb(5.8, 400, 1800);
+  movelr(-0.1, 100, 200);
+  movefb(0.7, 600, 400);
+  pidTurn(270);
+  intake.move(200);
+  pros::delay(900);
   mogoMech.toggle();
-  movefb(0.1, 400, 300);
+  movefb(-0.4, 400, 500);
+  movefb(2.3, 400, 1000);
+  pidTurn(40);
+  movefb(-2.3, 100, 1000);
+  mogoMech.toggle();
   pidTurn(90);
-  movefb(-2.4, 200, 800);
-  pidTurn(0);
-  movefb(-1, 400, 800);
+  movefb(2, 300, 2000);
+  pidTurn(270);
+  movefb(4, 200, 2000);
 }
 /**
  * Runs the operator control code. This function will be started in its own task
