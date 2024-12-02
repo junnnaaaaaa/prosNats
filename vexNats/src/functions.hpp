@@ -1,4 +1,5 @@
 #include "main.h"
+#include <cmath>
 #pragma once
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup
@@ -83,6 +84,7 @@ void pidTurn(float targ) {
         break;
       }
     }
+    preverror = error;
     pros::delay(dt);
   }
 
@@ -91,30 +93,30 @@ void pidTurn(float targ) {
 void pidMove(float targ) {
   float error, deriv, amt, inter;
   float preverror = 0;
-  float kp = 0.001;
-  float ki = 0.2;
-  float kd = 0.7;
+  float kp = 0.38;
+  float ki = 0.15;
+  float kd = 2;
   float power = 100;
   float dt = 20;
   int count = 0;
   odoRotation.reset_position();
-  std::string amtstr = "killing myself";
-  std::string errorstr = "killing myself";
-  targ = (targ / 220.0) * 360.0;
+  std::string amtstr = "";
+  std::string errorstr = "";
   while (true) {
     amt = odoRotation.get_position();
-    amt = amt / 100.0;
+    amt = (amt / 36000) * 2.75 * M_PI * 2.54 * 10.0;
     amtstr = std::to_string(amt);
     error = targ - amt;
     errorstr = std::to_string(error);
-    if (std::abs(inter) > 100) {
+    if (std::abs(inter) > 5 || std::abs(error) < 10) {
       inter = 0;
     }
     inter += error;
     deriv = error - preverror;
-    power = error * kp + inter * ki + deriv * kd;
-    left_mg.move(power * 0.6);
-    right_mg.move(power * 0.6);
+    power = (error * kp + inter * ki + deriv * kd) * 1;
+    left_mg.move(power);
+    right_mg.move(power);
+    preverror = error;
     pros::lcd::set_text(2, amtstr);
     pros::lcd::set_text(3, errorstr);
     pros::delay(dt);
