@@ -63,8 +63,10 @@ void competition_initialize() {}
 void autonomous() {
 
   pros::lcd::set_text(1, "auto initialized");
-  pidMove(600);
-  pidTurn(90);
+  for (int i = 1; i < 5; i++) {
+    pidMove(500);
+    pidTurn(i * 90);
+  }
   /*pros::delay(200);
   pros::lcd::set_text(6, std::to_string(imu.get_heading()));
   pidTurn(270);
