@@ -12,7 +12,7 @@ pros::MotorGroup right_mg(
 pros::Motor intake(-12, pros::v5::MotorGears::green,
                    pros::v5::MotorUnits::rotations);
 // arm: 13
-pros::Motor arm(-13, pros::v5::MotorGears::red,
+pros::Motor arm(-14, pros::v5::MotorGears::red,
                 pros::v5::MotorUnits::rotations);
 // mogomech: port g
 pros::adi::Pneumatics mogoMech('g', false, true);
@@ -21,11 +21,13 @@ pros::adi::Pneumatics flap('h', false);
 // inertia moment: port 20
 pros::IMU imu(20);
 // me when i rotate: port 18
-pros::Rotation odoRotation(-14);
-void movefb(float amnt, int spd, int wait) {
+pros::Rotation odoRotation(-18);
+void movefb(float amnt, int spd, int time) {
+  const double finalLeftPos = amnt - left_mg.get_position();
+  const double finalRightPos = amnt - right_mg.get_position();
   left_mg.move_relative(amnt, spd);
   right_mg.move_relative(amnt, spd);
-  pros::delay(wait);
+  pros::delay(time);
 }
 void movelr(float amnt, int spd, int wait) {
   left_mg.move_relative(amnt, spd);
@@ -38,9 +40,9 @@ void pidTurn(float targ) {
   float preverror = 0;
   float deriv;
   float head;
-  float kp = 0.02;
-  float ki = 0.1;
-  float kd = 1;
+  float kp = 0.01;
+  float ki = 0.2;
+  float kd = 1.1;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -61,8 +63,8 @@ void pidTurn(float targ) {
     if (error > -2 && error < 2) {
       inter = error;
     }
-    if (inter > 200 | inter < -200) {
-      inter = 2;
+    if (inter > 150 | inter < -150) {
+      inter = 0;
     }
     inter += error;
     deriv = error - preverror;
@@ -72,9 +74,11 @@ void pidTurn(float targ) {
     pros::lcd::set_text(2, headstr);
     derivstr = std::to_string(deriv);
     pros::lcd::set_text(3, derivstr);
-    if (2 > error && error > -2) {
+    derivstr = std::to_string(power);
+    pros::lcd::set_text(4, derivstr);
+    if (std::abs(power) < 2.5 || std::abs(deriv) < 2.5) {
       count += 1;
-      if (count > 2) {
+      if (count > 4) {
         pros::lcd::set_text(4, "broken");
         break;
       }
@@ -87,29 +91,32 @@ void pidTurn(float targ) {
 void pidMove(float targ) {
   float error, deriv, amt, inter;
   float preverror = 0;
-  float kp = 1;
-  float ki = 0;
-  float kd = 0;
+  float kp = 0.001;
+  float ki = 0.2;
+  float kd = 0.7;
   float power = 100;
   float dt = 20;
   int count = 0;
-  odoRotation.reset();
+  odoRotation.reset_position();
   std::string amtstr = "killing myself";
+  std::string errorstr = "killing myself";
   targ = (targ / 220.0) * 360.0;
   while (true) {
     amt = odoRotation.get_position();
     amt = amt / 100.0;
     amtstr = std::to_string(amt);
     error = targ - amt;
-    if (std::abs(inter) > 200) {
+    errorstr = std::to_string(error);
+    if (std::abs(inter) > 100) {
       inter = 0;
     }
     inter += error;
     deriv = error - preverror;
     power = error * kp + inter * ki + deriv * kd;
-    left_mg.move(power);
-    right_mg.move(power);
+    left_mg.move(power * 0.6);
+    right_mg.move(power * 0.6);
     pros::lcd::set_text(2, amtstr);
+    pros::lcd::set_text(3, errorstr);
     pros::delay(dt);
   }
 }
