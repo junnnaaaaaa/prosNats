@@ -111,6 +111,12 @@ void pidMove(float targ) {
     if (std::abs(inter) > 5 || std::abs(error) < 10) {
       inter = 0;
     }
+    if (std::abs(power) < 4) {
+      count++;
+      if (count > 3) {
+        break;
+      }
+    }
     inter += error;
     deriv = error - preverror;
     power = (error * kp + inter * ki + deriv * kd) * 1;
@@ -119,6 +125,8 @@ void pidMove(float targ) {
     preverror = error;
     pros::lcd::set_text(2, amtstr);
     pros::lcd::set_text(3, errorstr);
+    errorstr = std::to_string(power);
+    pros::lcd::set_text(4, errorstr);
     pros::delay(dt);
   }
 }
