@@ -42,8 +42,8 @@ void pidTurn(float targ) {
   float deriv;
   float head;
   float kp = 1.8;
-  float ki = 0.5;
-  float kd = 9.5;
+  float ki = 0.7;
+  float kd = 12;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -64,7 +64,7 @@ void pidTurn(float targ) {
     if (error > -2 && error < 2) {
       inter = error;
     }
-    if (std::abs(inter) > 100) {
+    if (std::abs(inter) > 70) {
       inter = 0;
     }
     inter += error;
@@ -93,9 +93,9 @@ void pidTurn(float targ) {
 void pidMove(float targ) {
   float error, deriv, amt, inter;
   float preverror = 0;
-  float kp = 0.38;
-  float ki = 0.15;
-  float kd = 2;
+  float kp = 0.42;
+  float ki = 0.25;
+  float kd = 3;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -108,10 +108,10 @@ void pidMove(float targ) {
     amtstr = std::to_string(amt);
     error = targ - amt;
     errorstr = std::to_string(error);
-    if (std::abs(inter) > 5 || std::abs(error) < 10) {
+    if (std::abs(inter) > 5 || std::abs(error) < 3) {
       inter = 0;
     }
-    if (std::abs(power) < 4) {
+    if (std::abs(error) < 5) {
       count++;
       if (count > 3) {
         break;
