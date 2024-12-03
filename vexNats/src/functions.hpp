@@ -42,8 +42,8 @@ void pidTurn(float targ) {
   float deriv;
   float head;
   float kp = 1.8;
-  float ki = 0.7;
-  float kd = 12;
+  float ki = 0.9;
+  float kd = 12.5;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -77,7 +77,7 @@ void pidTurn(float targ) {
     pros::lcd::set_text(3, derivstr);
     derivstr = std::to_string(power);
     pros::lcd::set_text(4, derivstr);
-    if (std::abs(error) < 1.5) {
+    if (std::abs(error) < 1) {
       count += 1;
       if (count > 4) {
         pros::lcd::set_text(4, "broken");
@@ -87,6 +87,8 @@ void pidTurn(float targ) {
     preverror = error;
     pros::delay(dt);
   }
+  left_mg.move(0);
+  right_mg.move(0);
 
   pros::lcd::set_text(5, "turn complete");
 }
@@ -108,7 +110,7 @@ void pidMove(float targ) {
     amtstr = std::to_string(amt);
     error = targ - amt;
     errorstr = std::to_string(error);
-    if (std::abs(inter) > 5 || std::abs(error) < 3) {
+    if (std::abs(inter) > 100 || std::abs(error) < 3) {
       inter = 0;
     }
     if (std::abs(error) < 5) {
@@ -129,4 +131,6 @@ void pidMove(float targ) {
     pros::lcd::set_text(4, errorstr);
     pros::delay(dt);
   }
+  left_mg.move(0);
+  right_mg.move(0);
 }
