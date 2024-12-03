@@ -1,4 +1,5 @@
 #include "main.h"
+#include <cmath>
 #pragma once
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup
@@ -40,9 +41,9 @@ void pidTurn(float targ) {
   float preverror = 0;
   float deriv;
   float head;
-  float kp = 0.01;
-  float ki = 0.2;
-  float kd = 1.1;
+  float kp = 1.8;
+  float ki = 0.7;
+  float kd = 12;
   float power = 100;
   float dt = 20;
   int count = 0;
@@ -63,7 +64,7 @@ void pidTurn(float targ) {
     if (error > -2 && error < 2) {
       inter = error;
     }
-    if (inter > 150 | inter < -150) {
+    if (std::abs(inter) > 70) {
       inter = 0;
     }
     inter += error;
@@ -76,13 +77,14 @@ void pidTurn(float targ) {
     pros::lcd::set_text(3, derivstr);
     derivstr = std::to_string(power);
     pros::lcd::set_text(4, derivstr);
-    if (std::abs(power) < 2.5 || std::abs(deriv) < 2.5) {
+    if (std::abs(error) < 1.5) {
       count += 1;
       if (count > 4) {
         pros::lcd::set_text(4, "broken");
         break;
       }
     }
+    preverror = error;
     pros::delay(dt);
   }
 
@@ -91,32 +93,40 @@ void pidTurn(float targ) {
 void pidMove(float targ) {
   float error, deriv, amt, inter;
   float preverror = 0;
-  float kp = 0.001;
-  float ki = 0.2;
-  float kd = 0.7;
+  float kp = 0.42;
+  float ki = 0.25;
+  float kd = 3;
   float power = 100;
   float dt = 20;
   int count = 0;
   odoRotation.reset_position();
-  std::string amtstr = "killing myself";
-  std::string errorstr = "killing myself";
-  targ = (targ / 220.0) * 360.0;
+  std::string amtstr = "";
+  std::string errorstr = "";
   while (true) {
     amt = odoRotation.get_position();
-    amt = amt / 100.0;
+    amt = (amt / 36000) * 2.75 * M_PI * 2.54 * 10.0;
     amtstr = std::to_string(amt);
     error = targ - amt;
     errorstr = std::to_string(error);
-    if (std::abs(inter) > 100) {
+    if (std::abs(inter) > 5 || std::abs(error) < 3) {
       inter = 0;
+    }
+    if (std::abs(error) < 5) {
+      count++;
+      if (count > 3) {
+        break;
+      }
     }
     inter += error;
     deriv = error - preverror;
-    power = error * kp + inter * ki + deriv * kd;
-    left_mg.move(power * 0.6);
-    right_mg.move(power * 0.6);
+    power = (error * kp + inter * ki + deriv * kd) * 1;
+    left_mg.move(power);
+    right_mg.move(power);
+    preverror = error;
     pros::lcd::set_text(2, amtstr);
     pros::lcd::set_text(3, errorstr);
+    errorstr = std::to_string(power);
+    pros::lcd::set_text(4, errorstr);
     pros::delay(dt);
   }
 }
