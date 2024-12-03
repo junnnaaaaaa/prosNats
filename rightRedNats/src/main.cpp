@@ -64,7 +64,7 @@ void autonomous() {
   pros::delay(20);
   mogoMech.retract();
   pros::lcd::set_text(1, "auto initialized");
-  movefb(-4.3, 300, 2000);
+  pidMove(880);
   pidTurn(145);
   movefb(-1.3, 100, 800);
   mogoMech.toggle();
