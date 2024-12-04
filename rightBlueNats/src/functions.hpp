@@ -47,8 +47,8 @@ void pidTurn(float targ) {
   float power = 100;
   float dt = 20;
   int count = 0;
-  std::string headstr = "kill me please";
-  std::string derivstr = "kill me please";
+  std::string headstr = "";
+  std::string derivstr = "";
   deriv = 2;
   while (true) {
     headstr = std::to_string(imu.get_heading());
@@ -58,7 +58,6 @@ void pidTurn(float targ) {
       error = error - 360;
     }
     if (error < -180) {
-    https: // www.vexrobotics.com/276-7417.html
       error = error + 360;
     }
     if (error > -2 && error < 2) {

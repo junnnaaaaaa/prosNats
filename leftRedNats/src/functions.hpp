@@ -58,7 +58,6 @@ void pidTurn(float targ) {
       error = error - 360;
     }
     if (error < -180) {
-    https: // www.vexrobotics.com/276-7417.html
       error = error + 360;
     }
     if (error > -2 && error < 2) {
