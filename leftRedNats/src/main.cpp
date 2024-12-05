@@ -65,7 +65,7 @@ void autonomous() {
   mogoMech.retract();
   pidMove(-300);
   pidTurn(0);
-  pidMove(-175);
+  pidMove(-167);
   pros::delay(200);
   arm.move_absolute(3.5, 100);
   pros::delay(2500);
