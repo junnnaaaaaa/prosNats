@@ -63,9 +63,13 @@ void competition_initialize() {}
 void autonomous() {
   pros::delay(20);
   mogoMech.retract();
-  pidMove(-300);
+  pidMove(200);
+  pidTurn(90);
+  pidMove(-355);
   pidTurn(0);
-  pidMove(-175);
+  pidMove(-195);
+  pidTurn(0);
+  pidMove(-138);
   pros::delay(200);
   arm.move_absolute(3.5, 100);
   pros::delay(2500);

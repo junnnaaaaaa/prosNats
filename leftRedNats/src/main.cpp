@@ -62,19 +62,22 @@ void competition_initialize() {}
  */
 void autonomous() {
   pros::delay(20);
-  mogoMech.retract();
-  pidMove(-300);
+  mogoMech.extend();
+  pidMove(200);
+  pidTurn(270);
+  pidMove(-355);
   pidTurn(0);
-  pidMove(-167);
+  pidMove(-195);
   pros::delay(200);
   arm.move_absolute(3.5, 100);
   pros::delay(2500);
   arm.move_absolute(0, 100);
   pros::delay(600);
   pidMove(180);
+  mogoMech.retract();
   pidTurn(142);
   pidMove(-700);
-  movefb(-1.5, 150, 500);
+  movefb(-1.2, 150, 500);
   mogoMech.toggle();
   pros::delay(150);
   pidTurn(270);
